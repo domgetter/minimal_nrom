@@ -246,7 +246,7 @@ module minimal_nrom(
 
   // Unknown
   assign ppu_ex = 0;
-  assign cpu_ex  = 0;
+  assign cpu_ex = 0;
   
   // Disable the SRAM chip
   assign sram_ce = 1'b1;
