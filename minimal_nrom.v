@@ -223,8 +223,11 @@ module minimal_nrom(
   assign chr_a[22:0] = {10'b0000000000, ppu_a[12:0]};
   // Only enable CHR when PPU is accessing pattern data
   assign chr_ce = ppu_a[13];
-  // Only enable output of CHR when PPU is accessing pattern data
-  assign chr_oe = ppu_a[13];
+  // Only enable output of CHR when PPU is reading
+  // This implementation does not support CHR RAM for NROM
+  // But if the PPU does attempt to write to pattern data, this
+  //   won't result in a bus conflict (thanks paulb_nl).
+  assign chr_oe = ppu_rd;
   // Never write to CHR.
   assign chr_we = 1'b1;
 
@@ -234,14 +237,14 @@ module minimal_nrom(
   // Never issue a hardware interrupt to the CPU
   assign cpu_irq = 1'b1;
 
-  // (Speculation) enable level shifters to convert 3.3V to 5V when CPU is reading from cart.
+  // Set direction of level shifters to convert 3.3V to 5V when CPU is reading from cart.
   assign cpu_dir = !cpu_romsel;
 
   // Enable internal video RAM when PPU wants access.
   assign ppu_ciram_ce = !ppu_a[13];
   // Mirroring
   assign ppu_ciram_a10 = ppu_a[10];
-  // (Speculation) enable level shifters to convert 3.3V to 5V when PPU is reading, and not reading from CIRAM.
+  // Set direction of level shifters to convert 3.3V to 5V when PPU is reading, and not reading from CIRAM.
   assign ppu_dir = !ppu_rd & !ppu_a[13];
 
   // Unknown
